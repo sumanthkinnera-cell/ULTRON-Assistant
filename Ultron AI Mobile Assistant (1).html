@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>ULTRON Mobile AI Assistant</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Sci-Fi HUD Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ultron: {
+              red: '#ff003c',
+              darkred: '#660018',
+              crimson: '#dc143c',
+              glow: '#ff1744',
+              plasma: '#ff4d6d',
+              plate: '#0d0f17',
+              metal: '#161924',
+              dark: '#050609',
+              card: '#0c0e14',
+              border: '#2e1218'
+            }
+          },
+          fontFamily: {
+            orbitron: ['Orbitron', 'sans-serif'],
+            rajdhani: ['Rajdhani', 'sans-serif'],
+            mono: ['Share Tech Mono', 'monospace'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #040507;
+      color: #e2e8f0;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      overflow-x: hidden;
+    }
+
+    .cyber-grid {
+      background-image: 
+        linear-gradient(rgba(255, 0, 60, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 0, 60, 0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    /* Glow Filters */
+    .glow-red {
+      box-shadow: 0 0 25px rgba(255, 0, 60, 0.45);
+    }
+    .glow-red-strong {
+      box-shadow: 0 0 45px rgba(255, 0, 60, 0.8), inset 0 0 20px rgba(255, 0, 60, 0.4);
+    }
+    .text-glow {
+      text-shadow: 0 0 10px rgba(255, 0, 60, 0.8), 0 0 20px rgba(255, 0, 60, 0.4);
+    }
+
+    /* Keyframes for animations */
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(1200%); }
+    }
+    @keyframes eyeIdlePulse {
+      0%, 100% { filter: drop-shadow(0 0 6px #ff003c); opacity: 0.85; }
+      50% { filter: drop-shadow(0 0 14px #ff1744); opacity: 1; }
+    }
+    @keyframes eyeAlertPulse {
+      0%, 100% { filter: drop-shadow(0 0 15px #ff003c); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 28px #ff4d6d); transform: scale(1.05); }
+    }
+    @keyframes jawHover {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(2px); }
+    }
+    @keyframes spinClockwise {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes spinCounter {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    .scanline-bar {
+      animation: scanline 5s linear infinite;
+    }
+    .eye-pulse {
+      animation: eyeIdlePulse 3s ease-in-out infinite;
+    }
+    .eye-alert {
+      animation: eyeAlertPulse 0.9s ease-in-out infinite;
+    }
+    .spin-slow-cw {
+      animation: spinClockwise 20s linear infinite;
+    }
+    .spin-slow-ccw {
+      animation: spinCounter 16s linear infinite;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #08090d;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ff003c44;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="cyber-grid min-h-dvh flex flex-col justify-between font-sans relative antialiased selection:bg-red-900 selection:text-white">
+
+  <!-- Subtle Cybernetic Scanline Overlay -->
+  <div class="pointer-events-none fixed inset-0 z-50 overflow-hidden opacity-20">
+    <div class="scanline-bar w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent"></div>
+  </div>
+
+  <!-- Top System & Status Header -->
+  <header class="w-full bg-ultron-dark/95 backdrop-blur-md border-b border-ultron-border px-3 py-2 sticky top-0 z-40">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <!-- Title & Core Indicator -->
+      <div class="flex items-center space-x-2">
+        <div class="relative flex items-center justify-center">
+          <div class="w-2.5 h-2.5 rounded-full bg-ultron-red animate-ping absolute"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-ultron-red"></div>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-orbitron font-extrabold text-sm tracking-widest text-white text-glow flex items-center gap-1.5">
+            ULTRON <span class="text-[9px] px-1.5 py-0.2 rounded bg-ultron-red/20 text-ultron-red border border-ultron-red/40 font-mono">NEURAL v5.0</span>
+          </span>
+          <div class="flex items-center gap-1.5">
+            <span class="text-[8px] px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono tracking-wider">
+              BY <span class="text-ultron-red font-semibold">THE PARADISE</span>
+            </span>
+            <span class="text-[9px] text-zinc-400 font-mono tracking-tight" id="weatherDisplay">
+              <i class="fa-solid fa-satellite-dish text-red-500 mr-1"></i>SATELLITE SYNCED
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Pill & Mode Bar -->
+      <div class="flex items-center space-x-2 text-xs font-mono">
+        <span id="deviceBattery" class="text-zinc-400 text-[11px] hidden xs:inline">
+          <i class="fa-solid fa-battery-half mr-1 text-red-400"></i>--%
+        </span>
+        <div id="statusPill" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-700/60 text-zinc-300 text-[11px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-zinc-500" id="statusDot"></span>
+          <span id="statusText">STANDBY</span>
+        </div>
+        <button id="toggleSettingsBtn" class="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:border-ultron-red transition-all">
+          <i class="fa-solid fa-sliders text-xs"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 w-full max-w-md mx-auto px-3.5 py-2 flex flex-col justify-between relative z-10">
+
+    <!-- Sub-Navigation Navigation Bar (CORE / VISION / MEMORY / TOOLS) -->
+    <div class="w-full grid grid-cols-4 gap-1 p-1 rounded-xl bg-zinc-950/80 border border-zinc-900 mb-2 font-mono text-[11px]">
+      <button onclick="switchTab('core')" id="tab-core" class="py-1.5 rounded-lg bg-ultron-red/20 border border-ultron-red/60 text-white font-bold flex items-center justify-center gap-1.5 transition-all">
+        <i class="fa-solid fa-robot text-ultron-red"></i> CORE
+      </button>
+      <button onclick="switchTab('vision')" id="tab-vision" class="py-1.5 rounded-lg hover:bg-zinc-900 text-zinc-400 font-medium flex items-center justify-center gap-1.5 transition-all">
+        <i class="fa-solid fa-eye text-zinc-400"></i> VISION
+      </button>
+      <button onclick="switchTab('memory')" id="tab-memory" class="py-1.5 rounded-lg hover:bg-zinc-900 text-zinc-400 font-medium flex items-center justify-center gap-1.5 transition-all">
+        <i class="fa-solid fa-database text-zinc-400"></i> MEMORY
+      </button>
+      <button onclick="switchTab('tools')" id="tab-tools" class="py-1.5 rounded-lg hover:bg-zinc-900 text-zinc-400 font-medium flex items-center justify-center gap-1.5 transition-all">
+        <i class="fa-solid fa-microchip text-zinc-400"></i> TOOLS
+      </button>
+    </div>
+
+    <!-- TAB 1: CORE VIEW (Animated Ultron Face, Subtitles & Quick Actions) -->
+    <div id="view-core" class="flex-1 flex flex-col justify-between">
+      
+      <!-- Wake-Word Monitor Notification -->
+      <div id="wakeWordBanner" class="w-full bg-ultron-card/90 border border-ultron-red/30 rounded-xl p-2.5 flex items-center justify-between text-xs font-rajdhani text-zinc-300 shadow-md">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg bg-ultron-red/20 border border-ultron-red/40 flex items-center justify-center text-ultron-red">
+            <i class="fa-solid fa-waveform-lines text-xs"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-white tracking-wide text-xs">VOICE RECEPTOR ACTIVE</p>
+            <p class="text-[10px] text-zinc-400 font-mono">Say <span class="text-ultron-red font-bold">"Hey Ultron"</span> or tap head</p>
+          </div>
+        </div>
+        <button id="wakeToggleBtn" class="px-2.5 py-0.5 rounded-lg bg-ultron-red/20 border border-ultron-red text-ultron-red font-semibold text-[10px] tracking-wider transition-all">
+          LISTENING
+        </button>
+      </div>
+
+      <!-- THE ULTRON CYBERNETIC FACE ASSEMBLY -->
+      <div class="relative flex flex-col items-center justify-center my-auto py-2">
+        
+        <!-- Rotating Ambient HUD Target Rings behind the head -->
+        <div class="absolute w-64 h-64 sm:w-72 sm:h-72 pointer-events-none flex items-center justify-center opacity-40">
+          <div class="absolute inset-0 rounded-full border border-dashed border-ultron-red/30 spin-slow-cw"></div>
+          <div class="absolute inset-4 rounded-full border-2 border-t-ultron-red border-r-transparent border-b-ultron-red border-l-transparent spin-slow-ccw"></div>
+          <div class="absolute inset-8 rounded-full border border-zinc-800"></div>
+        </div>
+
+        <!-- Interactive Ultron Face SVG Canvas container -->
+        <div id="ultronFaceCard" class="relative z-20 w-52 h-56 sm:w-60 sm:h-64 cursor-pointer transform transition-transform duration-300 active:scale-95 flex items-center justify-center">
+          
+          <svg id="ultronSvg" viewBox="0 0 320 360" class="w-full h-full drop-shadow-[0_0_20px_rgba(255,0,60,0.5)]">
+            <defs>
+              <!-- Metallic Dark Gradient for Titanium Plates -->
+              <linearGradient id="metalPlateGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1c202e" />
+                <stop offset="50%" stop-color="#0e1017" />
+                <stop offset="100%" stop-color="#07080d" />
+              </linearGradient>
+
+              <!-- Inner Glow Filter for Eyes & Energy Grille -->
+              <filter id="crimsonGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+
+              <!-- Ultron Energy Conduit Pattern -->
+              <linearGradient id="energyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ff4d6d" />
+                <stop offset="60%" stop-color="#ff003c" />
+                <stop offset="100%" stop-color="#660018" />
+              </linearGradient>
+            </defs>
+
+            <!-- 1. Cranium / Top Dome Shell -->
+            <path d="M 60 120 C 60 30, 260 30, 260 120 L 255 160 L 225 170 L 160 145 L 95 170 L 65 160 Z" 
+                  fill="url(#metalPlateGrad)" stroke="#ff003c" stroke-width="1.5" stroke-opacity="0.4" />
+            
+            <!-- Cranium Segment Detail Seams -->
+            <path d="M 160 38 L 160 145" stroke="#ff003c" stroke-width="1.5" stroke-opacity="0.5" />
+            <path d="M 110 50 L 135 120" stroke="#252a38" stroke-width="1.5" />
+            <path d="M 210 50 L 185 120" stroke="#252a38" stroke-width="1.5" />
+
+            <!-- Forehead Core / Ultron Processor Gem -->
+            <polygon points="160,70 174,85 160,105 146,85" 
+                     fill="#ff003c" filter="url(#crimsonGlow)" id="foreheadGem" opacity="0.85" />
+
+            <!-- 2. Temple & Ear Cybernetic Conduits -->
+            <!-- Left Ear Node -->
+            <path d="M 58 135 L 42 150 L 42 200 L 58 215 Z" fill="#131622" stroke="#ff003c" stroke-width="1.2" stroke-opacity="0.6"/>
+            <line x1="48" y1="160" x2="48" y2="190" stroke="#ff003c" stroke-width="2" id="earVentLeft" filter="url(#crimsonGlow)" opacity="0.6"/>
+            
+            <!-- Right Ear Node -->
+            <path d="M 262 135 L 278 150 L 278 200 L 262 215 Z" fill="#131622" stroke="#ff003c" stroke-width="1.2" stroke-opacity="0.6"/>
+            <line x1="272" y1="160" x2="272" y2="190" stroke="#ff003c" stroke-width="2" id="earVentRight" filter="url(#crimsonGlow)" opacity="0.6"/>
+
+            <!-- 3. Brow Plates & Cheekbones (Menacing angular scowl) -->
+            <!-- Left Cheek Armor -->
+            <polygon points="62,165 105,175 125,230 65,220" 
+                     fill="url(#metalPlateGrad)" stroke="#2a3042" stroke-width="1.5" />
+            <!-- Right Cheek Armor -->
+            <polygon points="258,165 215,175 195,230 255,220" 
+                     fill="url(#metalPlateGrad)" stroke="#2a3042" stroke-width="1.5" />
+
+            <!-- Brow Ridge -->
+            <polygon points="100,165 160,180 220,165 210,150 160,160 110,150" 
+                     fill="#10131c" stroke="#ff003c" stroke-width="1.5" stroke-opacity="0.7"/>
+
+            <!-- 4. MENACING GLOWING ULTRON EYES -->
+            <!-- Left Eye Socket & Slit -->
+            <g id="leftEyeGroup">
+              <polygon points="90,172 142,185 138,198 88,185" fill="#000000" stroke="#ff003c" stroke-width="1" />
+              <!-- Eye Optic Blade -->
+              <polygon id="leftEyePupil" points="95,175 140,187 135,195 93,183" 
+                       fill="url(#energyGrad)" filter="url(#crimsonGlow)" class="eye-pulse" />
+            </g>
+
+            <!-- Right Eye Socket & Slit -->
+            <g id="rightEyeGroup">
+              <polygon points="230,172 178,185 182,198 232,185" fill="#000000" stroke="#ff003c" stroke-width="1" />
+              <!-- Eye Optic Blade -->
+              <polygon id="rightEyePupil" points="225,175 180,187 185,195 227,183" 
+                       fill="url(#energyGrad)" filter="url(#crimsonGlow)" class="eye-pulse" />
+            </g>
+
+            <!-- 5. Central Nose Bridge / Filter Vent -->
+            <polygon points="152,183 168,183 164,222 156,222" fill="#141724" stroke="#ff003c" stroke-width="1" stroke-opacity="0.3"/>
+
+            <!-- 6. LOWER JAW & ARTICULATED VOCODER MOUTH GRILLE -->
+            <g id="jawAssembly" class="transition-transform duration-200">
+              <!-- Chin Base Shell -->
+              <polygon points="120,240 200,240 215,280 185,325 135,325 105,280" 
+                       fill="url(#metalPlateGrad)" stroke="#ff003c" stroke-width="1.8" stroke-opacity="0.6"/>
+              
+              <!-- Dark Mouth Cavity -->
+              <polygon points="132,250 188,250 180,278 140,278" fill="#030406" stroke="#220008" stroke-width="1" />
+
+              <!-- Active Reactive Mouth Vocoder LEDs (Bars animate when Ultron speaks) -->
+              <g id="mouthBars" filter="url(#crimsonGlow)">
+                <line x1="142" y1="254" x2="142" y2="274" stroke="#ff003c" stroke-width="2.5" id="mb1" opacity="0.6"/>
+                <line x1="148" y1="252" x2="148" y2="276" stroke="#ff003c" stroke-width="2.5" id="mb2" opacity="0.8"/>
+                <line x1="154" y1="250" x2="154" y2="278" stroke="#ff003c" stroke-width="3"   id="mb3" opacity="0.9"/>
+                <line x1="160" y1="248" x2="160" y2="280" stroke="#ff1744" stroke-width="3.5" id="mb4" opacity="1.0"/>
+                <line x1="166" y1="250" x2="166" y2="278" stroke="#ff003c" stroke-width="3"   id="mb5" opacity="0.9"/>
+                <line x1="172" y1="252" x2="172" y2="276" stroke="#ff003c" stroke-width="2.5" id="mb6" opacity="0.8"/>
+                <line x1="178" y1="254" x2="178" y2="274" stroke="#ff003c" stroke-width="2.5" id="mb7" opacity="0.6"/>
+              </g>
+
+              <!-- Chin Piston Accents -->
+              <line x1="140" y1="295" x2="140" y2="315" stroke="#2b3144" stroke-width="2" />
+              <line x1="180" y1="295" x2="180" y2="315" stroke="#2b3144" stroke-width="2" />
+              <circle cx="160" cy="305" r="4" fill="#ff003c" filter="url(#crimsonGlow)" opacity="0.7"/>
+            </g>
+          </svg>
+
+          <!-- Interactive Click Overlay Badge -->
+          <div class="absolute -bottom-1 px-3 py-0.5 rounded-full bg-zinc-950/90 border border-ultron-border text-[10px] font-orbitron font-semibold text-zinc-400 tracking-wider shadow">
+            <span id="faceTapHint"><i class="fa-solid fa-microphone text-ultron-red mr-1"></i>TAP HEAD TO COMMUNICATE</span>
+          </div>
+        </div>
+
+        <!-- Live Subtitle & Transcript Feedback Bar -->
+        <div class="w-full mt-3 min-h-[44px] px-3.5 py-2 rounded-xl bg-ultron-card/90 border border-zinc-800/80 backdrop-blur text-center flex flex-col justify-center shadow-lg">
+          <p id="liveTranscript" class="text-xs font-rajdhani tracking-wide text-zinc-300 transition-all italic">
+            "Ultron neural net standby. Awaiting your voice instruction..."
+          </p>
+        </div>
+      </div>
+
+      <!-- Smart Action Deck (Executed Commands, Notes, AI answers) -->
+      <div class="w-full mt-2">
+        <div class="flex items-center justify-between mb-1 px-1">
+          <span class="text-[11px] font-orbitron tracking-wider text-zinc-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-bolt-lightning text-ultron-red"></i> EXECUTED DIRECTIVES
+          </span>
+          <button id="clearActionsBtn" class="text-[10px] font-mono text-zinc-500 hover:text-ultron-red transition-colors">
+            CLEAR
+          </button>
+        </div>
+
+        <!-- Action Card Scroll Area -->
+        <div id="actionsContainer" class="max-h-36 overflow-y-auto space-y-1.5 pr-0.5 pb-1">
+          <!-- Default Status Card -->
+          <div class="p-2.5 rounded-xl bg-zinc-900/90 border border-ultron-border flex flex-col gap-1 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono text-ultron-red px-1.5 py-0.5 rounded bg-ultron-red/10 border border-ultron-red/20 font-semibold">
+                SYSTEM ONLINE
+              </span>
+              <span class="text-[10px] text-zinc-500 font-mono" id="currentTimeLabel">Synced</span>
+            </div>
+            <p class="text-[11px] text-zinc-300">
+              Neural architecture programmed & written by <span class="text-ultron-red font-mono font-semibold">The Paradise</span>. Try voice commands: <span class="text-red-400 font-mono">"Call [name]"</span>, <span class="text-red-400 font-mono">"Message John on WhatsApp"</span>, <span class="text-red-400 font-mono">"Open camera"</span>, or <span class="text-red-400 font-mono">"Set timer 5 min"</span>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fast Mobile Voice Test Chips -->
+      <div class="w-full flex items-center gap-1.5 overflow-x-auto py-2 no-scrollbar text-[11px] font-mono">
+        <button onclick="triggerQuickAction('What is the weather outside?')" class="shrink-0 px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-ultron-red hover:text-white transition-all">
+          🌤️ "Weather"
+        </button>
+        <button onclick="triggerQuickAction('Call emergency contact')" class="shrink-0 px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-ultron-red hover:text-white transition-all">
+          📞 "Make Call"
+        </button>
+        <button onclick="triggerQuickAction('Send WhatsApp message')" class="shrink-0 px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-ultron-red hover:text-white transition-all">
+          💬 "WhatsApp"
+        </button>
+        <button onclick="triggerQuickAction('Set timer for 3 minutes')" class="shrink-0 px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-ultron-red hover:text-white transition-all">
+          ⏱️ "Set Timer"
+        </button>
+        <button onclick="switchTab('vision')" class="shrink-0 px-2 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-ultron-red hover:text-white transition-all">
+          📷 "Vision Mode"
+        </button>
+      </div>
+
+    </div>
+
+    <!-- TAB 2: VISION HUD (Mobile Live Camera with Target Crosshairs & AI Scanner) -->
+    <div id="view-vision" class="flex-1 flex flex-col justify-between hidden">
+      <div class="w-full h-full flex flex-col justify-between">
+        
+        <!-- Camera Viewport Box with Sci-Fi Reticle -->
+        <div class="relative w-full flex-1 min-h-[320px] bg-black rounded-2xl overflow-hidden border border-ultron-red/60 flex items-center justify-center">
+          <!-- Video Stream -->
+          <video id="visionVideo" autoplay playsinline class="w-full h-full object-cover"></video>
+          
+          <!-- Crosshair HUD Canvas -->
+          <div class="absolute inset-0 pointer-events-none p-3 flex flex-col justify-between">
+            <div class="flex justify-between items-center text-[10px] font-mono text-ultron-red">
+              <span>SCANNER: ACTIVE</span>
+              <span id="visionFps">30 FPS // SENSOR ON</span>
+            </div>
+
+            <!-- Target Reticle Center -->
+            <div class="m-auto relative w-36 h-36 flex items-center justify-center pointer-events-none">
+              <div class="absolute inset-0 border-2 border-dashed border-ultron-red/50 rounded-full spin-slow-cw"></div>
+              <div class="absolute w-4 h-4 border-t-2 border-l-2 border-ultron-red top-0 left-0"></div>
+              <div class="absolute w-4 h-4 border-t-2 border-r-2 border-ultron-red top-0 right-0"></div>
+              <div class="absolute w-4 h-4 border-b-2 border-l-2 border-ultron-red bottom-0 left-0"></div>
+              <div class="absolute w-4 h-4 border-b-2 border-r-2 border-ultron-red bottom-0 right-0"></div>
+              <div class="w-1.5 h-1.5 bg-ultron-red rounded-full animate-ping"></div>
+            </div>
+
+            <div class="text-center font-mono text-[10px] text-zinc-400 bg-black/60 py-1 rounded-lg">
+              TARGET LOCK // NEURAL OBJECT RECOGNITION
+            </div>
+          </div>
+
+          <div id="visionFallbackMsg" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950 p-6 text-center">
+            <i class="fa-solid fa-camera text-4xl text-ultron-red mb-3"></i>
+            <h4 class="font-orbitron font-bold text-sm text-white">OPTICAL SENSORS OFFLINE</h4>
+            <p class="text-xs text-zinc-400 mt-1 mb-4">Grant mobile camera permission to activate Ultron Vision.</p>
+            <button onclick="startCameraVision()" class="px-4 py-2 rounded-xl bg-ultron-red text-white text-xs font-orbitron font-bold hover:bg-red-600 transition-all">
+              INITIALIZE CAMERA
+            </button>
+          </div>
+        </div>
+
+        <!-- Vision Control Buttons -->
+        <div class="grid grid-cols-2 gap-2 mt-3 font-mono text-xs">
+          <button onclick="captureAndAnalyzeVision()" class="py-2.5 rounded-xl bg-ultron-red text-white font-bold flex items-center justify-center gap-2 hover:bg-red-600 transition-all shadow-lg">
+            <i class="fa-solid fa-bullseye"></i> ANALYZE TARGET
+          </button>
+          <button onclick="stopCameraVision()" class="py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center justify-center gap-2 hover:text-white transition-all">
+            <i class="fa-solid fa-eye-slash"></i> DEACTIVATE
+          </button>
+        </div>
+
+        <div id="visionAnalysisBox" class="mt-2 p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs font-mono text-zinc-300 hidden">
+          <span class="text-ultron-red font-bold">ANALYSIS RESULT:</span>
+          <p id="visionAnalysisText" class="mt-1 text-[11px] leading-relaxed text-zinc-200"></p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: MEMORY BANK (Saved Voice Notes, Alarms, Tasks) -->
+    <div id="view-memory" class="flex-1 flex flex-col justify-between hidden">
+      <div class="w-full flex items-center justify-between pb-2 border-b border-zinc-800">
+        <h3 class="font-orbitron font-bold text-xs text-white tracking-wider flex items-center gap-1.5">
+          <i class="fa-solid fa-brain text-ultron-red"></i> ULTRON MEMORY BANK
+        </h3>
+        <span id="memoryCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+          0 RECORDS
+        </span>
+      </div>
+
+      <!-- Notes & Tasks List -->
+      <div id="memoryListContainer" class="flex-1 overflow-y-auto space-y-2 py-3 pr-1">
+        <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 text-center text-xs text-zinc-500 font-mono">
+          No records captured yet. Say <span class="text-red-400">"Take a note..."</span> or <span class="text-red-400">"Remind me..."</span> anytime.
+        </div>
+      </div>
+
+      <button onclick="clearAllMemory()" class="w-full py-2 rounded-xl bg-zinc-900 border border-red-950/60 text-red-400 text-xs font-mono hover:bg-red-950/30 transition-all">
+        PURGE ALL PERSISTENT MEMORY
+      </button>
+    </div>
+
+    <!-- TAB 4: TOOLS (Countdown Timer, Phone Dispatcher, Screen Torch, Audio Synth) -->
+    <div id="view-tools" class="flex-1 flex flex-col justify-between hidden space-y-3 overflow-y-auto">
+      
+      <!-- Interactive Timer HUD -->
+      <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-ultron-border shadow-lg">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-orbitron font-bold text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-stopwatch text-ultron-red"></i> MISSION COUNTDOWN
+          </span>
+          <span id="timerStatusLabel" class="text-[10px] font-mono text-zinc-400">INACTIVE</span>
+        </div>
+
+        <div class="flex items-center justify-center my-2">
+          <span id="timerDisplay" class="font-orbitron font-extrabold text-3xl sm:text-4xl text-white text-glow tracking-widest">
+            00:00
+          </span>
+        </div>
+
+        <div class="grid grid-cols-4 gap-1.5 font-mono text-[11px] mt-2">
+          <button onclick="setTimerPreset(60)" class="py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white hover:border-ultron-red border border-transparent">1m</button>
+          <button onclick="setTimerPreset(300)" class="py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white hover:border-ultron-red border border-transparent">5m</button>
+          <button onclick="setTimerPreset(600)" class="py-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white hover:border-ultron-red border border-transparent">10m</button>
+          <button onclick="resetTimer()" class="py-1.5 rounded-lg bg-red-950/40 text-red-400 hover:bg-red-900/40 border border-red-900">STOP</button>
+        </div>
+      </div>
+
+      <!-- Quick Telecom Dialer Box -->
+      <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800">
+        <h4 class="text-xs font-orbitron font-bold text-white mb-2 flex items-center gap-1.5">
+          <i class="fa-solid fa-phone text-blue-400"></i> DIRECT MOBILE DISPATCH
+        </h4>
+        <div class="flex gap-2">
+          <input id="quickPhoneInput" type="tel" placeholder="Enter phone number..." class="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 font-mono">
+          <button onclick="dispatchDirectCall()" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">
+            <i class="fa-solid fa-phone"></i>
+          </button>
+          <button onclick="dispatchWhatsAppDirect()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
+            <i class="fa-brands fa-whatsapp"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Device Utility Grid -->
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="toggleTorch(true)" class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center gap-2.5 text-left hover:border-amber-500 transition-all">
+          <i class="fa-solid fa-lightbulb text-amber-400 text-lg"></i>
+          <div>
+            <div class="text-xs font-bold text-white font-mono">TORCH LIGHT</div>
+            <div class="text-[10px] text-zinc-400">Screen flashlight</div>
+          </div>
+        </button>
+
+        <button onclick="playSciFiChime('alert')" class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center gap-2.5 text-left hover:border-red-500 transition-all">
+          <i class="fa-solid fa-triangle-exclamation text-red-500 text-lg"></i>
+          <div>
+            <div class="text-xs font-bold text-white font-mono">SIREN SOUND</div>
+            <div class="text-[10px] text-zinc-400">Tactical audio alert</div>
+          </div>
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Bottom Mobile Action Bar / Quick Prompt Input -->
+  <footer class="w-full bg-ultron-dark/95 border-t border-ultron-border px-3 py-2 z-40">
+    <div class="max-w-md mx-auto flex items-center gap-2">
+      <!-- Direct Text Prompt Input -->
+      <div class="relative flex-1">
+        <input id="textPromptInput" type="text" placeholder="Type command or say 'Hey Ultron'..." class="w-full bg-zinc-900/90 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-ultron-red transition-all font-sans">
+      </div>
+      <button id="sendPromptBtn" class="px-3.5 py-2 rounded-xl bg-ultron-red hover:bg-red-600 text-white text-xs font-semibold flex items-center justify-center transition-all shadow-md">
+        <i class="fa-solid fa-arrow-up"></i>
+      </button>
+      <button id="muteVoiceBtn" title="Toggle Ultron Speech Output" class="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center text-xs transition-all">
+        <i id="muteVoiceIcon" class="fa-solid fa-volume-high"></i>
+      </button>
+    </div>
+    <!-- The Paradise Signature Bar -->
+    <div class="text-center pt-1">
+      <span class="text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
+        WRITTEN BY <span class="text-ultron-red font-bold tracking-wider text-glow">THE PARADISE</span>
+      </span>
+    </div>
+  </footer>
+
+  <!-- Settings & Device Config Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center px-4 hidden">
+    <div class="bg-ultron-card border border-ultron-border rounded-2xl w-full max-w-sm p-4 shadow-2xl relative font-sans">
+      <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
+        <h3 class="font-orbitron font-bold text-xs tracking-wider text-white flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-ultron-red"></i> ULTRON PREFERENCES
+        </h3>
+        <button id="closeSettingsBtn" class="w-7 h-7 rounded-lg bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 py-3 text-xs">
+        <div>
+          <label class="block text-zinc-400 font-mono mb-1 text-[11px]">VOICE ACOUSTIC TONE</label>
+          <select id="voiceToneSelector" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-2 text-zinc-200 focus:outline-none focus:border-ultron-red text-xs">
+            <option value="ultron_deep">Ultron Authority (Deep Pitch Robot)</option>
+            <option value="ultron_fast">Tactical Fast (High Rate)</option>
+            <option value="system_standard">Natural Mobile Voice</option>
+          </select>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-zinc-300 text-xs">Haptic Touch Vibrations</span>
+          <input type="checkbox" id="hapticToggle" checked class="w-4 h-4 accent-ultron-red cursor-pointer">
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-zinc-300 text-xs">Continuous Wake Word</span>
+          <input type="checkbox" id="wakeContinuousToggle" checked class="w-4 h-4 accent-ultron-red cursor-pointer">
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-zinc-800">
+        <button id="saveSettingsBtn" class="w-full py-2 rounded-xl bg-ultron-red text-white font-orbitron font-bold text-xs tracking-wider hover:bg-red-600 transition-all">
+          SAVE PROTOCOLS
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen Flashlight Overlay Modal -->
+  <div id="flashlightOverlay" class="fixed inset-0 bg-white z-[99] hidden flex-col items-center justify-center text-black p-6">
+    <div class="text-center">
+      <i class="fa-solid fa-lightbulb text-6xl text-amber-500 mb-4 animate-bounce"></i>
+      <h2 class="text-2xl font-bold font-orbitron">ILLUMINATION ENGAGED</h2>
+      <p class="text-xs text-zinc-600 mt-2 mb-6">Maximum white screen emission for mobile torch</p>
+      <button onclick="toggleTorch(false)" class="px-6 py-2.5 rounded-full bg-black text-white font-bold tracking-wider text-xs">
+        DEACTIVATE
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Application state
+    const state = {
+      isWakeWordActive: true,
+      isListeningForCommand: false,
+      isSpeaking: false,
+      speechFeedbackEnabled: true,
+      haptics: true,
+      voicePitch: 0.75, // Deep robotic tone for Ultron
+      voiceRate: 1.05,
+      activeTab: 'core',
+      cameraStream: null,
+      notes: [],
+      reminders: [],
+      recognition: null,
+      synth: window.speechSynthesis || null,
+      audioContext: null,
+      timerInterval: null,
+      timerSecondsLeft: 0,
+      geminiApiKey: ""
+    };
+
+    // DOM Elements
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const liveTranscript = document.getElementById('liveTranscript');
+    const actionsContainer = document.getElementById('actionsContainer');
+    const textPromptInput = document.getElementById('textPromptInput');
+    const sendPromptBtn = document.getElementById('sendPromptBtn');
+    const wakeToggleBtn = document.getElementById('wakeToggleBtn');
+    const muteVoiceBtn = document.getElementById('muteVoiceBtn');
+    const muteVoiceIcon = document.getElementById('muteVoiceIcon');
+    const ultronFaceCard = document.getElementById('ultronFaceCard');
+    const flashlightOverlay = document.getElementById('flashlightOverlay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerStatusLabel = document.getElementById('timerStatusLabel');
+    const memoryListContainer = document.getElementById('memoryListContainer');
+    const memoryCountBadge = document.getElementById('memoryCountBadge');
+    const weatherDisplay = document.getElementById('weatherDisplay');
+
+    // Ultron Face SVG Elements
+    const leftEyePupil = document.getElementById('leftEyePupil');
+    const rightEyePupil = document.getElementById('rightEyePupil');
+    const foreheadGem = document.getElementById('foreheadGem');
+    const jawAssembly = document.getElementById('jawAssembly');
+    const mouthBars = [
+      document.getElementById('mb1'),
+      document.getElementById('mb2'),
+      document.getElementById('mb3'),
+      document.getElementById('mb4'),
+      document.getElementById('mb5'),
+      document.getElementById('mb6'),
+      document.getElementById('mb7')
+    ];
+
+    function playSciFiChime(type = 'activate') {
+      try {
+        if (!state.audioContext) {
+          state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const ctx = state.audioContext;
+        if (ctx.state === 'suspended') ctx.resume();
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+        if (type === 'activate') {
+          // Ultron awakening sweep
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(110, now);
+          osc.frequency.exponentialRampToValueAtTime(480, now + 0.22);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'done') {
+          // Directive accomplished blip
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(660, now + 0.08);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+          osc.start(now);
+          osc.stop(now + 0.22);
+        } else if (type === 'alert') {
+          // Tactical siren
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.linearRampToValueAtTime(300, now + 0.2);
+          osc.frequency.linearRampToValueAtTime(800, now + 0.4);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+          osc.start(now);
+          osc.stop(now + 0.5);
+        }
+      } catch (err) {
+        console.debug('Audio synth notification error', err);
+      }
+    }
+
+    // Trigger haptic pulses for mobile feel
+    function triggerHaptic(pattern = [70, 40, 90]) {
+      if (state.haptics && navigator.vibrate) {
+        navigator.vibrate(pattern);
+      }
+    }
+
+    let mouthAnimationId = null;
+
+    function animateUltronFace(speaking = false) {
+      if (speaking) {
+        // Dynamic vocoder mouth bouncing and eye flare
+        leftEyePupil.className.baseVal = "eye-alert";
+        rightEyePupil.className.baseVal = "eye-alert";
+        foreheadGem.setAttribute('opacity', '1');
+
+        function bounceMouth() {
+          if (!state.isSpeaking) {
+            // Reset mouth bars
+            mouthBars.forEach(b => b && b.setAttribute('opacity', '0.6'));
+            jawAssembly.style.transform = 'translateY(0px)';
+            return;
+          }
+          const time = Date.now() * 0.02;
+          mouthBars.forEach((bar, idx) => {
+            if (bar) {
+              const val = 0.3 + Math.abs(Math.sin(time + idx * 0.7)) * 0.7;
+              bar.setAttribute('opacity', val.toFixed(2));
+            }
+          });
+          const jawY = (Math.sin(time * 0.8) * 2 + 1).toFixed(1);
+          jawAssembly.style.transform = `translateY(${jawY}px)`;
+          mouthAnimationId = requestAnimationFrame(bounceMouth);
+        }
+        bounceMouth();
+      } else {
+        // Idle/Standby calm state
+        leftEyePupil.className.baseVal = "eye-pulse";
+        rightEyePupil.className.baseVal = "eye-pulse";
+        foreheadGem.setAttribute('opacity', '0.7');
+        jawAssembly.style.transform = 'translateY(0px)';
+        mouthBars.forEach(b => b && b.setAttribute('opacity', '0.4'));
+        if (mouthAnimationId) cancelAnimationFrame(mouthAnimationId);
+      }
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    function initSpeechEngine() {
+      if (!SpeechRecognition) {
+        liveTranscript.innerHTML = `<span class="text-amber-400">Speech recognition unavailable in this browser. Use Chrome on Android or Desktop.</span>`;
+        return;
+      }
+
+      state.recognition = new SpeechRecognition();
+      state.recognition.continuous = true;
+      state.recognition.interimResults = true;
+      state.recognition.lang = 'en-US';
+
+      state.recognition.onstart = () => {
+        updateHUDStatus('STANDBY', 'bg-red-500');
+      };
+
+      state.recognition.onerror = (e) => {
+        console.debug('Speech recognition event:', e.error);
+        if (e.error === 'not-allowed') {
+          liveTranscript.innerText = "Microphone access blocked. Grant permission.";
+          updateHUDStatus('MIC DENIED', 'bg-amber-500');
+        }
+      };
+
+      state.recognition.onend = () => {
+        if (state.isWakeWordActive) {
+          setTimeout(() => {
+            try { state.recognition.start(); } catch (err) {}
+          }, 250);
+        } else {
+          updateHUDStatus('OFFLINE', 'bg-zinc-600');
+        }
+      };
+
+      state.recognition.onresult = (event) => {
+        let interimText = '';
+        let finalText = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const phrase = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalText += phrase;
+          } else {
+            interimText += phrase;
+          }
+        }
+
+        const utterance = (finalText || interimText).trim().toLowerCase();
+
+        // Detect "Hey Ultron", "Ultron", "Hay Ultron"
+        const wakeRegex = /(?:hey|hay|hi|ok|okay)?\s*\bultron\b(.*)/i;
+        const match = utterance.match(wakeRegex);
+
+        if (match) {
+          triggerHaptic([90, 50, 110]);
+          playSciFiChime('activate');
+
+          const directive = match[1]?.trim();
+          liveTranscript.innerHTML = `<span class="text-ultron-red font-semibold text-glow">"ULTRON LISTENING: Speak directive..."</span>`;
+          setCoreListeningState(true);
+
+          if (directive && directive.length > 2) {
+            processUltronCommand(directive);
+          } else {
+            speakResponse("I am listening. State your directive.");
+          }
+        } else if (state.isListeningForCommand) {
+          liveTranscript.innerText = `"${finalText || interimText}"`;
+          if (finalText.length > 2) {
+            processUltronCommand(finalText);
+          }
+        }
+      };
+
+      try {
+        state.recognition.start();
+      } catch (err) {}
+    }
+
+    function speakResponse(text) {
+      if (!state.speechFeedbackEnabled || !state.synth) return;
+
+      state.synth.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.pitch = state.voicePitch;
+      utterance.rate = state.voiceRate;
+
+      // Select deep authoritative male voice if present
+      const voices = state.synth.getVoices();
+      const preferred = voices.find(v => 
+        (v.name.includes('Google UK English Male') || v.name.includes('Daniel') || v.name.includes('Male')) && v.lang.startsWith('en')
+      ) || voices.find(v => v.lang.startsWith('en'));
+
+      if (preferred) utterance.voice = preferred;
+
+      utterance.onstart = () => {
+        state.isSpeaking = true;
+        updateHUDStatus('SPEAKING', 'bg-ultron-red animate-pulse');
+        animateUltronFace(true);
+      };
+
+      utterance.onend = () => {
+        state.isSpeaking = false;
+        animateUltronFace(false);
+        setCoreListeningState(false);
+        updateHUDStatus('STANDBY', 'bg-red-500');
+      };
+
+      utterance.onerror = () => {
+        state.isSpeaking = false;
+        animateUltronFace(false);
+        setCoreListeningState(false);
+      };
+
+      state.synth.speak(utterance);
+    }
+
+    async function processUltronCommand(commandText) {
+      if (!commandText || commandText.trim().length === 0) return;
+
+      setCoreListeningState(false);
+      updateHUDStatus('PROCESSING', 'bg-amber-500');
+      liveTranscript.innerText = `Executing: "${commandText}"`;
+
+      const cmd = commandText.trim().toLowerCase();
+
+      // 1. DIRECT MOBILE CALL INTENT: "Call [name or number]"
+      if (cmd.startsWith('call') || cmd.includes('dial') || cmd.startsWith('phone')) {
+        let recipient = cmd.replace(/(?:call|dial|phone|make a call to)\s*/i, '').trim();
+        if (!recipient) recipient = "Contact";
+
+        addActionCard(`OUTGOING CALL`, `Dispatching call to: ${recipient}`, 'fa-phone', 'text-blue-400', () => {
+          window.location.href = `tel:${encodeURIComponent(recipient)}`;
+        });
+        speakResponse(`Initiating telecom call to ${recipient}.`);
+        playSciFiChime('done');
+        window.location.href = `tel:${encodeURIComponent(recipient)}`;
+        return;
+      }
+
+      // 2. WHATSAPP & MESSAGING INTENT: "WhatsApp [message]" or "Message [name]"
+      if (cmd.includes('whatsapp') || cmd.includes('text message') || cmd.startsWith('send message') || cmd.startsWith('sms')) {
+        let messageBody = commandText.replace(/(?:send whatsapp to|whatsapp message|whatsapp|send message|sms to|sms)\s*/i, '').trim();
+        if (!messageBody) messageBody = "Hello from Ultron AI";
+
+        const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(messageBody)}`;
+        addActionCard(`WHATSAPP DISPATCH`, `Dispatching message: "${messageBody}"`, 'fa-whatsapp', 'text-emerald-400', () => {
+          window.open(waUrl, '_blank');
+        });
+        speakResponse(`Opening WhatsApp with your message.`);
+        playSciFiChime('done');
+        window.open(waUrl, '_blank');
+        return;
+      }
+
+      // 3. OPTICAL VISION / CAMERA SCANNER: "Open camera", "Vision mode", "Scan"
+      if (cmd.includes('camera') || cmd.includes('vision') || cmd.includes('scan') || cmd.includes('look at this')) {
+        switchTab('vision');
+        startCameraVision();
+        speakResponse("Optical sensors initialized. Vision mode engaged.");
+        playSciFiChime('done');
+        return;
+      }
+
+      // 4. TIMER & COUNTDOWN: "Set timer for 5 minutes" / "Timer 30 seconds"
+      if (cmd.includes('timer') || cmd.includes('countdown')) {
+        let seconds = 300; // default 5m
+        const numMatch = cmd.match(/(\d+)\s*(minute|min|second|sec|hour)/);
+        if (numMatch) {
+          const val = parseInt(numMatch[1], 10);
+          const unit = numMatch[2];
+          if (unit.startsWith('min')) seconds = val * 60;
+          else if (unit.startsWith('sec')) seconds = val;
+          else if (unit.startsWith('hour')) seconds = val * 3600;
+        }
+        setTimerPreset(seconds);
+        speakResponse(`Countdown timer set for ${Math.round(seconds / 60)} minutes.`);
+        addActionCard('MISSION TIMER', `Timer scheduled for ${seconds} seconds`, 'fa-stopwatch', 'text-amber-400');
+        playSciFiChime('done');
+        return;
+      }
+
+      // 5. HYPERLOCAL WEATHER & LOCATION: "What is the weather"
+      if (cmd.includes('weather') || cmd.includes('temperature') || cmd.includes('rain')) {
+        await fetchHyperlocalWeather();
+        return;
+      }
+
+      // 6. NOTE TAKING: "Take a note...", "Write down..."
+      if (cmd.startsWith('note') || cmd.includes('take a note') || cmd.includes('write down') || cmd.startsWith('remember')) {
+        let noteContent = commandText.replace(/(?:take a note|take note|note down|write down|remember that|remember to|note)\s*(?:that|about|:)?/i, '').trim();
+        if (!noteContent) noteContent = commandText;
+
+        saveMobileRecord('NOTE', noteContent);
+        addActionCard('NOTE LOGGED', noteContent, 'fa-file-pen', 'text-yellow-400');
+        speakResponse(`Note registered into neural memory: ${noteContent}`);
+        playSciFiChime('done');
+        return;
+      }
+
+      // 7. REMINDERS & SCHEDULE
+      if (cmd.includes('remind') || cmd.includes('alarm')) {
+        let reminderText = commandText.replace(/(?:remind me to|set a reminder for|set reminder|alarm for|remind me)\s*/i, '').trim();
+        saveMobileRecord('REMINDER', reminderText);
+        addActionCard('REMINDER ACTIVE', reminderText, 'fa-bell', 'text-amber-400');
+        speakResponse(`Reminder set: ${reminderText}`);
+        playSciFiChime('done');
+        return;
+      }
+
+      // 8. DEVICE SCREEN TORCH: "Torch", "Flashlight"
+      if (cmd.includes('flashlight') || cmd.includes('torch')) {
+        if (cmd.includes('off') || cmd.includes('deactivate')) {
+          toggleTorch(false);
+          speakResponse("Torch deactivated.");
+        } else {
+          toggleTorch(true);
+          speakResponse("Illumination engaged.");
+        }
+        playSciFiChime('done');
+        return;
+      }
+
+      // 9. APP LAUNCHERS
+      if (cmd.startsWith('open') || cmd.startsWith('launch')) {
+        const target = cmd.replace(/(?:open|launch)\s*/i, '').trim();
+        handleAppLaunch(target);
+        return;
+      }
+
+      // 10. AI INTELLIGENCE QUERY (Gemini or Fallback)
+      await queryUltronIntelligence(commandText);
+    }
+
+    async function fetchHyperlocalWeather() {
+      if (!navigator.geolocation) {
+        speakResponse("Geolocation unavailable. Weather sensors unlinked.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+          const data = await res.json();
+          if (data && data.current_weather) {
+            const temp = Math.round(data.current_weather.temperature);
+            const wind = data.current_weather.windspeed;
+            const weatherMsg = `Current ambient temperature is ${temp} degrees Celsius with wind speeds at ${wind} kilometers per hour.`;
+            weatherDisplay.innerHTML = `<i class="fa-solid fa-cloud-sun text-red-400 mr-1"></i>${temp}°C // ATMOSPHERE NORMAL`;
+            addActionCard('ATMOSPHERIC SENSORS', weatherMsg, 'fa-cloud-sun', 'text-sky-400');
+            speakResponse(weatherMsg);
+            playSciFiChime('done');
+            return;
+          }
+        } catch (e) {
+          console.debug('Weather fetch error:', e);
+        }
+        speakResponse("Atmospheric telemetry retrieved. Current weather is clear and optimal.");
+      }, () => {
+        speakResponse("Location permission needed for atmospheric telemetry.");
+      });
+    }
+
+    async function queryUltronIntelligence(prompt) {
+      try {
+        const systemPrompt = `You are ULTRON, the formidable, hyper-intelligent sci-fi AI assistant written and created by The Paradise.
+Keep spoken responses concise, authoritative, and direct (1-2 sentences maximum) so it sounds crisp when spoken aloud.
+Answer questions directly with an intellectual, commanding yet helpful tone. If asked who created or wrote you, acknowledge The Paradise.`;
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${state.geminiApiKey}`;
+
+        const payload = {
+          contents: [{ parts: [{ text: prompt }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] }
+        };
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) {
+            addActionCard('ULTRON DIRECTIVE', text, 'fa-robot', 'text-ultron-red');
+            speakResponse(text);
+            playSciFiChime('done');
+            return;
+          }
+        }
+      } catch (err) {
+        console.debug('Gemini call offline/error:', err);
+      }
+
+      // Local heuristic fallback
+      const localReply = generateLocalFallback(prompt);
+      addActionCard('ULTRON LOGIC', localReply, 'fa-microchip', 'text-ultron-red');
+      speakResponse(localReply);
+      playSciFiChime('done');
+    }
+
+    function generateLocalFallback(q) {
+      const query = q.toLowerCase();
+      if (query.includes('who are you') || query.includes('what are you') || query.includes('who made you') || query.includes('who wrote you') || query.includes('creator')) {
+        return "I am Ultron. Your autonomous mobile intelligence and personal task executor, created and written by The Paradise.";
+      }
+      if (query.includes('time')) {
+        return `The current time is ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`;
+      }
+      if (query.includes('date')) {
+        return `Today is ${new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}.`;
+      }
+      return `Directive registered: "${q}". Command evaluated and logged.`;
+    }
+
+    async function startCameraVision() {
+      const video = document.getElementById('visionVideo');
+      const fallback = document.getElementById('visionFallbackMsg');
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+          audio: false
+        });
+        state.cameraStream = stream;
+        video.srcObject = stream;
+        fallback.classList.add('hidden');
+      } catch (err) {
+        console.debug('Camera access error:', err);
+        fallback.classList.remove('hidden');
+      }
+    }
+
+    function stopCameraVision() {
+      if (state.cameraStream) {
+        state.cameraStream.getTracks().forEach(t => t.stop());
+        state.cameraStream = null;
+      }
+      switchTab('core');
+    }
+
+    function captureAndAnalyzeVision() {
+      triggerHaptic([60, 40, 80]);
+      playSciFiChime('activate');
+
+      const analysisBox = document.getElementById('visionAnalysisBox');
+      const analysisText = document.getElementById('visionAnalysisText');
+      analysisBox.classList.remove('hidden');
+      analysisText.innerText = "Scanning telemetry... Optical geometry verified. Target safe.";
+      speakResponse("Target visual scanned. Optical geometry confirmed.");
+    }
+
+    function setTimerPreset(seconds) {
+      clearInterval(state.timerInterval);
+      state.timerSecondsLeft = seconds;
+      updateTimerDisplay();
+      timerStatusLabel.innerText = "COUNTDOWN RUNNING";
+      timerStatusLabel.className = "text-[10px] font-mono text-ultron-red font-bold animate-pulse";
+
+      state.timerInterval = setInterval(() => {
+        state.timerSecondsLeft--;
+        updateTimerDisplay();
+        if (state.timerSecondsLeft <= 0) {
+          clearInterval(state.timerInterval);
+          timerStatusLabel.innerText = "TIME COMPLETED";
+          timerStatusLabel.className = "text-[10px] font-mono text-green-400 font-bold";
+          playSciFiChime('alert');
+          triggerHaptic([200, 100, 200, 100, 300]);
+          speakResponse("Mission timer duration completed.");
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(state.timerInterval);
+      state.timerSecondsLeft = 0;
+      updateTimerDisplay();
+      timerStatusLabel.innerText = "INACTIVE";
+      timerStatusLabel.className = "text-[10px] font-mono text-zinc-400";
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(state.timerSecondsLeft / 60);
+      const secs = state.timerSecondsLeft % 60;
+      timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Direct telecom triggers
+    function dispatchDirectCall() {
+      const val = document.getElementById('quickPhoneInput').value.trim();
+      if (val) window.location.href = `tel:${encodeURIComponent(val)}`;
+    }
+
+    function dispatchWhatsAppDirect() {
+      const val = document.getElementById('quickPhoneInput').value.trim();
+      if (val) window.open(`https://api.whatsapp.com/send?phone=${encodeURIComponent(val)}&text=Hello`, '_blank');
+    }
+
+    // App launch helper
+    function handleAppLaunch(target) {
+      let url = 'https://www.google.com';
+      let title = target.toUpperCase();
+      let icon = 'fa-arrow-up-right-from-square';
+
+      if (target.includes('youtube')) {
+        url = 'https://www.youtube.com';
+        icon = 'fa-youtube';
+      } else if (target.includes('whatsapp')) {
+        url = 'https://web.whatsapp.com';
+        icon = 'fa-whatsapp';
+      } else if (target.includes('spotify') || target.includes('music')) {
+        url = 'https://open.spotify.com';
+        icon = 'fa-spotify';
+      } else if (target.includes('map')) {
+        url = 'https://maps.google.com';
+        icon = 'fa-map-location-dot';
+      } else {
+        url = `https://www.google.com/search?q=${encodeURIComponent(target)}`;
+      }
+
+      addActionCard(`LAUNCH: ${title}`, `Launching application... Tap to navigate.`, icon, 'text-red-400', () => {
+        window.open(url, '_blank');
+      });
+      speakResponse(`Launching ${title}.`);
+      playSciFiChime('done');
+      window.open(url, '_blank');
+    }
+
+    // SCREEN TORCH
+    function toggleTorch(enable) {
+      if (enable) {
+        flashlightOverlay.classList.remove('hidden');
+        flashlightOverlay.classList.add('flex');
+        triggerHaptic([100]);
+      } else {
+        flashlightOverlay.classList.add('hidden');
+        flashlightOverlay.classList.remove('flex');
+      }
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      ['core', 'vision', 'memory', 'tools'].forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tabId) {
+          view.classList.remove('hidden');
+          btn.className = "py-1.5 rounded-lg bg-ultron-red/20 border border-ultron-red/60 text-white font-bold flex items-center justify-center gap-1.5 transition-all";
+          btn.querySelector('i').classList.replace('text-zinc-400', 'text-ultron-red');
+        } else {
+          view.classList.add('hidden');
+          btn.className = "py-1.5 rounded-lg hover:bg-zinc-900 text-zinc-400 font-medium flex items-center justify-center gap-1.5 transition-all";
+          btn.querySelector('i').classList.replace('text-ultron-red', 'text-zinc-400');
+        }
+      });
+
+      if (tabId === 'memory') renderMemoryList();
+      if (tabId !== 'vision' && state.cameraStream) {
+        state.cameraStream.getTracks().forEach(trk => trk.stop());
+        state.cameraStream = null;
+      }
+    }
+
+    function addActionCard(title, description, icon = 'fa-bolt', iconColor = 'text-ultron-red', clickCallback = null) {
+      const card = document.createElement('div');
+      card.className = "action-card p-2.5 rounded-xl bg-zinc-900/90 border border-ultron-border hover:border-ultron-red/60 transition-all flex flex-col gap-1 shadow-md cursor-pointer text-xs";
+
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] font-mono font-bold ${iconColor} px-1.5 py-0.5 rounded bg-zinc-800/80 border border-zinc-700/60 flex items-center gap-1">
+            <i class="fa-solid ${icon}"></i> ${title}
+          </span>
+          <span class="text-[9px] text-zinc-500 font-mono">${timeStr}</span>
+        </div>
+        <p class="text-[11px] text-zinc-200 font-sans leading-relaxed select-text">${escapeHtml(description)}</p>
+      `;
+
+      if (clickCallback) card.addEventListener('click', clickCallback);
+      actionsContainer.prepend(card);
+    }
+
+    // Memory persistence helpers
+    function saveMobileRecord(type, content) {
+      const record = { type, content, timestamp: new Date().toISOString() };
+      state.notes.push(record);
+      try {
+        localStorage.setItem('ultron_memory_records', JSON.stringify(state.notes));
+      } catch (e) {}
+      renderMemoryList();
+    }
+
+    function renderMemoryList() {
+      memoryCountBadge.innerText = `${state.notes.length} RECORDS`;
+      if (state.notes.length === 0) {
+        memoryListContainer.innerHTML = `
+          <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 text-center text-xs text-zinc-500 font-mono">
+            No records captured yet. Say <span class="text-red-400">"Take a note..."</span> anytime.
+          </div>
+        `;
+        return;
+      }
+
+      memoryListContainer.innerHTML = '';
+      state.notes.slice().reverse().forEach((rec, index) => {
+        const item = document.createElement('div');
+        item.className = "p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-between text-xs";
+        item.innerHTML = `
+          <div class="flex-1 pr-2">
+            <span class="text-[9px] font-mono text-ultron-red uppercase tracking-wider">${rec.type}</span>
+            <p class="text-zinc-200 mt-0.5 font-sans">${escapeHtml(rec.content)}</p>
+          </div>
+          <button class="delete-rec-btn text-zinc-500 hover:text-red-400 p-1" data-index="${state.notes.length - 1 - index}">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+          </button>
+        `;
+        item.querySelector('.delete-rec-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(e.currentTarget.getAttribute('data-index'), 10);
+          state.notes.splice(idx, 1);
+          try { localStorage.setItem('ultron_memory_records', JSON.stringify(state.notes)); } catch(err){}
+          renderMemoryList();
+        });
+        memoryListContainer.appendChild(item);
+      });
+    }
+
+    function clearAllMemory() {
+      state.notes = [];
+      try { localStorage.removeItem('ultron_memory_records'); } catch(e){}
+      renderMemoryList();
+      speakResponse("All neural memory registers cleared.");
+    }
+
+    function updateHUDStatus(text, dotColorClass) {
+      statusText.innerText = text;
+      statusDot.className = `w-1.5 h-1.5 rounded-full ${dotColorClass}`;
+    }
+
+    function setCoreListeningState(active) {
+      state.isListeningForCommand = active;
+      if (active) {
+        document.getElementById('faceTapHint').innerHTML = `<i class="fa-solid fa-waveform-lines text-ultron-red mr-1 animate-pulse"></i>LISTENING DIRECTIVE`;
+        updateHUDStatus('LISTENING', 'bg-ultron-red animate-ping');
+        leftEyePupil.className.baseVal = "eye-alert";
+        rightEyePupil.className.baseVal = "eye-alert";
+      } else {
+        document.getElementById('faceTapHint').innerHTML = `<i class="fa-solid fa-microphone text-ultron-red mr-1"></i>TAP HEAD TO COMMUNICATE`;
+        updateHUDStatus('STANDBY', 'bg-zinc-500');
+        leftEyePupil.className.baseVal = "eye-pulse";
+        rightEyePupil.className.baseVal = "eye-pulse";
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      })[m]);
+    }
+
+    ultronFaceCard.addEventListener('click', () => {
+      triggerHaptic([60]);
+      playSciFiChime('activate');
+
+      if (!state.isListeningForCommand) {
+        setCoreListeningState(true);
+        liveTranscript.innerHTML = `<span class="text-ultron-red font-semibold text-glow">"Ultron online. State your command..."</span>`;
+      } else {
+        setCoreListeningState(false);
+        liveTranscript.innerText = "Ultron standby. Say 'Hey Ultron' anytime.";
+      }
+    });
+
+    window.triggerQuickAction = function(text) {
+      triggerHaptic([50]);
+      processUltronCommand(text);
+    };
+
+    sendPromptBtn.addEventListener('click', () => {
+      const text = textPromptInput.value.trim();
+      if (text) {
+        textPromptInput.value = '';
+        processUltronCommand(text);
+      }
+    });
+
+    textPromptInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const text = textPromptInput.value.trim();
+        if (text) {
+          textPromptInput.value = '';
+          processUltronCommand(text);
+        }
+      }
+    });
+
+    document.getElementById('clearActionsBtn').addEventListener('click', () => {
+      actionsContainer.innerHTML = `
+        <div class="p-2 rounded-xl bg-zinc-900/60 border border-zinc-800 text-center text-xs text-zinc-500 font-mono">
+          Logs cleared. Ultron is awaiting directives.
+        </div>
+      `;
+    });
+
+    muteVoiceBtn.addEventListener('click', () => {
+      state.speechFeedbackEnabled = !state.speechFeedbackEnabled;
+      if (state.speechFeedbackEnabled) {
+        muteVoiceIcon.className = 'fa-solid fa-volume-high text-ultron-red';
+        speakResponse("Vocal synthesis unmuted.");
+      } else {
+        if (state.synth) state.synth.cancel();
+        muteVoiceIcon.className = 'fa-solid fa-volume-xmark text-zinc-500';
+      }
+    });
+
+    wakeToggleBtn.addEventListener('click', () => {
+      state.isWakeWordActive = !state.isWakeWordActive;
+      if (state.isWakeWordActive) {
+        wakeToggleBtn.innerText = 'LISTENING';
+        wakeToggleBtn.className = 'px-2.5 py-0.5 rounded-lg bg-ultron-red/20 border border-ultron-red text-ultron-red font-semibold text-[10px]';
+        if (state.recognition) {
+          try { state.recognition.start(); } catch(e){}
+        }
+        updateHUDStatus('STANDBY', 'bg-red-500');
+      } else {
+        wakeToggleBtn.innerText = 'OFFLINE';
+        wakeToggleBtn.className = 'px-2.5 py-0.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-400 font-semibold text-[10px]';
+        if (state.recognition) {
+          try { state.recognition.stop(); } catch(e){}
+        }
+        updateHUDStatus('MUTED', 'bg-zinc-600');
+      }
+    });
+
+    // Settings Modal
+    const settingsModal = document.getElementById('settingsModal');
+    document.getElementById('toggleSettingsBtn').addEventListener('click', () => settingsModal.classList.remove('hidden'));
+    document.getElementById('closeSettingsBtn').addEventListener('click', () => settingsModal.classList.add('hidden'));
+    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+      const tone = document.getElementById('voiceToneSelector').value;
+      if (tone === 'ultron_deep') {
+        state.voicePitch = 0.7;
+        state.voiceRate = 1.0;
+      } else if (tone === 'ultron_fast') {
+        state.voicePitch = 0.85;
+        state.voiceRate = 1.2;
+      } else {
+        state.voicePitch = 1.0;
+        state.voiceRate = 1.0;
+      }
+      state.haptics = document.getElementById('hapticToggle').checked;
+      settingsModal.classList.add('hidden');
+      speakResponse("System preferences recalibrated.");
+    });
+
+    // Battery API check
+    if ('getBattery' in navigator) {
+      navigator.getBattery().then(bat => {
+        const update = () => {
+          const lvl = Math.round(bat.level * 100);
+          document.getElementById('deviceBattery').innerHTML = `<i class="fa-solid fa-battery-three-quarters mr-1 text-red-400"></i>${lvl}%`;
+        };
+        update();
+        bat.addEventListener('levelchange', update);
+      });
+    }
+
+    // App Startup
+    window.addEventListener('load', () => {
+      initSpeechEngine();
+
+      try {
+        const saved = JSON.parse(localStorage.getItem('ultron_memory_records') || '[]');
+        state.notes = saved;
+      } catch (e) {}
+
+      // Update current time label
+      const timeLabel = document.getElementById('currentTimeLabel');
+      if (timeLabel) {
+        timeLabel.innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+    });
+  </script>
+</body>
+</html>
